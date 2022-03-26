@@ -9,12 +9,23 @@ const app = express();
 let userName;
 
 app.get("/user", async (req, res) => {
-  userName = req.query.user_name;
-  console.log(userName);
-  const url = `https://github.com/${userName.toString()}?tab=repositories`;
-  const apiData = [];
-  const fetchData = await repos(url, apiData);
-  res.json(fetchData);
+  try {
+    userName = req.query.user_name;
+    console.log(userName);
+    const url = `https://github.com/${userName.toString()}?tab=repositories`;
+    const apiData = [];
+    const fetchData = await repos(url, apiData);
+    res.json(fetchData);
+  } catch (error) {
+    console.error(error);
+    console.log(req.protocol);
+    res.send(`<p>Please use the api in this format:  <a href="${
+      req.protocol
+    }://${req.get("host")}/user?user_name=name">${req.protocol}://${req.get(
+      "host"
+    )}/user?user_name=name</a> . Replace name with your github user name.
+    </p>`);
+  }
 });
 
 const repos = async (url, apiData) => {
@@ -35,7 +46,9 @@ const repos = async (url, apiData) => {
       });
     });
     return apiData;
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 app.listen(PORT, () => {
