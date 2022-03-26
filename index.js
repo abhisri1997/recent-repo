@@ -9,13 +9,12 @@ const app = express();
 let userName;
 
 app.get("/user", async (req, res) => {
-  userName = req.query.user_name.toString();
+  userName = req.query.user_name;
   console.log(userName);
-  const url = `https://github.com/${userName}?tab=repositories`;
+  const url = `https://github.com/${userName.toString()}?tab=repositories`;
   const apiData = [];
   const fetchData = await repos(url, apiData);
   res.json(fetchData);
-  // apiData.splice(0, apiData.length);
 });
 
 const repos = async (url, apiData) => {
@@ -24,18 +23,17 @@ const repos = async (url, apiData) => {
     const $ = cheerio.load(reposData.data);
     const repoDetail = $(".wb-break-all > a");
     const repoDesc = $("p[itemprop]");
-    repoDetail.each((index, element) => {
-      let repoName = $(element).text().trim();
-      let repoURL = `https://github.com${$(element).attr("href")}`;
+
+    $("[itemprop='owns'] > div:nth-child(1)").each((i, el) => {
+      let repoName = $(el).find(".wb-break-all > a").text().trim();
+      let repoLink = $(el).find(".wb-break-all > a").attr("href").trim();
+      let repoDesc = $(el).find("[itemprop='description']").text().trim();
       apiData.push({
         repoName: repoName,
-        repoLink: repoURL,
+        repoLink: repoLink,
+        repoDesc: repoDesc,
       });
     });
-    repoDesc.each((index, element) => {
-      apiData[index].desc = $(element).text().trim();
-    });
-    // console.log(apiData);
     return apiData;
   } catch (error) {}
 };
