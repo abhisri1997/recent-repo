@@ -6,15 +6,15 @@ const { children } = require("cheerio/lib/api/traversing");
 const PORT = process.env.PORT || 8000;
 
 const app = express();
-let userName;
 
 app.get("/user", async (req, res) => {
   try {
-    userName = req.query.user_name;
+    let userName = req.query.user_name.toString();
+    let repoNum = req.query.repo.toString();
     console.log(userName);
-    const url = `https://github.com/${userName.toString()}?tab=repositories`;
+    const url = `https://github.com/${userName}?tab=repositories`;
     const apiData = [];
-    const fetchData = await repos(url, apiData);
+    const fetchData = await repos(url, apiData, repoNum);
     res.json(fetchData);
   } catch (error) {
     console.error(error);
@@ -28,7 +28,7 @@ app.get("/user", async (req, res) => {
   }
 });
 
-const repos = async (url, apiData) => {
+const repos = async (url, apiData, repoNum) => {
   try {
     const reposData = await axios.get(url);
     const $ = cheerio.load(reposData.data);
@@ -45,7 +45,8 @@ const repos = async (url, apiData) => {
         repoDesc: repoDesc,
       });
     });
-    return apiData;
+    console.log(apiData.length);
+    return repoNum > 0 ? apiData.splice(0, repoNum) : apiData;
   } catch (error) {
     console.error(error);
   }
