@@ -7,6 +7,15 @@ const PORT = process.env.PORT || 8000;
 
 const app = express();
 
+app.get("/", async (req, res) => {
+  try {
+    res.redirect("/user");
+  } catch (error) {
+    console.error(error);
+    res.redirect("/user");
+  }
+});
+
 app.get("/user", async (req, res) => {
   try {
     let userName = req.query.user_name.toString();
