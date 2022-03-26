@@ -9,14 +9,14 @@ const app = express();
 
 app.get("/", async (req, res) => {
   try {
-    res.redirect("/user?");
+    res.redirect("/repos?");
   } catch (error) {
     console.error(error);
-    res.redirect("/user?");
+    res.redirect("/repos?");
   }
 });
 
-app.get("/user", async (req, res) => {
+app.get("/repos", async (req, res) => {
   try {
     let userName = req.query.user_name.toString();
     let repoNum = req.query.repo ? req.query.repo.toString() : 0;
