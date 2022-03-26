@@ -19,7 +19,7 @@ app.get("/", async (req, res) => {
 app.get("/user", async (req, res) => {
   try {
     let userName = req.query.user_name.toString();
-    let repoNum = req.query.repo.toString();
+    let repoNum = req.query.repo ? req.query.repo.toString() : 0;
     console.log(userName);
     const url = `https://github.com/${userName}?tab=repositories`;
     const apiData = [];
