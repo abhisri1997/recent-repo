@@ -9,10 +9,10 @@ const app = express();
 
 app.get("/", async (req, res) => {
   try {
-    res.redirect("/user");
+    res.redirect("/user?");
   } catch (error) {
     console.error(error);
-    res.redirect("/user");
+    res.redirect("/user?");
   }
 });
 
@@ -27,7 +27,6 @@ app.get("/user", async (req, res) => {
     res.json(fetchData);
   } catch (error) {
     console.error(error);
-    console.log(req.protocol);
     res.send(`<p>Please use the api in this format:  <a href="${
       req.protocol
     }://${req.get("host")}/user?user_name=name">${req.protocol}://${req.get(
