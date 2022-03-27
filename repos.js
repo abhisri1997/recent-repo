@@ -16,7 +16,6 @@ const repos = async (url, apiData, repoNum) => {
         repoDesc: repoDesc,
       });
     });
-    console.log(apiData.length);
     return repoNum > 0 ? apiData.splice(0, repoNum) : apiData;
   } catch (error) {
     console.error(error);
