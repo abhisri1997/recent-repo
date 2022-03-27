@@ -41,7 +41,7 @@ app.get("/repos", async (req, res) => {
       <div style="font-family: sans-serif;">
         <p>Please use the api in this format
         <a href="${appURL}/repos?user=name">${appURL}/repos?user=name</a>
-        and replace name with your github user name.  
+        and replace name with your GitHub user name.  
         </p>
         <p>
           Error - <span style="color: red;">${error}</span>
