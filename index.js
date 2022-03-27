@@ -24,12 +24,12 @@ app.get("/", async (req, res) => {
 
 app.get("/repos", async (req, res) => {
   try {
-    let userName = req.query.user.toString();
-    req.query.user === ""
+    req.query.user === "" || typeof req.query.user === "undefined"
       ? (function () {
-          throw "No user name provided...";
+          throw "No user name/user parameter provided...";
         })()
       : null;
+    let userName = req.query.user.toString();
     let repoNum = req.query.repo ? req.query.repo.toString() : 0;
     const url = `https://github.com/${userName}?tab=repositories`;
     const apiData = [];
@@ -38,12 +38,14 @@ app.get("/repos", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.send(`
-      <div>
+      <div style="font-family: sans-serif;">
         <p>Please use the api in this format
         <a href="${appURL}/repos?user=name">${appURL}/repos?user=name</a>
         and replace name with your github user name.  
         </p>
-        <p>Error - ${error}</p>
+        <p>
+          Error - <span style="color: red;">${error}</span>
+        </p>
       </div>
     `);
   }
