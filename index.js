@@ -3,7 +3,7 @@ const { children } = require("cheerio/lib/api/traversing");
 const { repos } = require("./repos");
 
 const protocol = process.env.HTTPS === "true" ? "https" : "http";
-const hostname = process.env.HOSTNAME || "local";
+const hostname = process.env.HOSTNAME || "localhost";
 const PORT = process.env.PORT || 8000;
 
 const app = express();
@@ -36,5 +36,5 @@ app.get("/repos", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Listening on http://127.0.0.1:${PORT}`);
+  console.log(`Listening on ${protocol}://${hostname}:${PORT}`);
 });
