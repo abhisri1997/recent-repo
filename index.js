@@ -7,7 +7,7 @@ const protocol = process.env.HTTPS === "true" ? "https" : "http";
 const hostname = process.env.HOSTNAME || "localhost";
 const PORT = process.env.PORT || 8000;
 const isLocal = hostname === "localhost" ? `:${PORT}` : "";
-const myCache = new nodeCache({ useClones: false });
+const myCache = new nodeCache();
 
 const appURL = `${protocol}://${hostname}${isLocal}`;
 
@@ -35,14 +35,19 @@ app.get("/repos", async (req, res) => {
     const repoNum = req.query.repo ? req.query.repo.toString() : 0;
     const url = `https://github.com/${userName}?tab=repositories`;
     const apiData = [];
-    let fetchData = "";
-    const cacheKey = `${userName}-${repoNum}`;
-    if (myCache.has(cacheKey)) {
-      fetchData = myCache.get(cacheKey);
-      console.log(myCache.keys());
-    } else {
-      fetchData = await repos(url, apiData, repoNum);
-      myCache.set(cacheKey, fetchData);
+    let fetchData = await repos(url, apiData);
+    if (typeof fetchData !== "undefined" && fetchData.length > 0) {
+      if (myCache.has(userName)) {
+        parseInt(repoNum) === 0
+          ? (fetchData = myCache.get(userName))
+          : (fetchData = myCache.get(userName).splice(0, repoNum));
+        console.log("Inside if ", myCache.keys());
+      } else {
+        parseInt(repoNum) === 0
+          ? myCache.set(userName, fetchData)
+          : (fetchData = fetchData.splice(0, repoNum));
+        console.log("Inside else ", myCache.keys());
+      }
     }
     res.json(fetchData);
   } catch (error) {
