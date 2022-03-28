@@ -7,7 +7,7 @@ const protocol = process.env.HTTPS === "true" ? "https" : "http";
 const hostname = process.env.HOSTNAME || "localhost";
 const PORT = process.env.PORT || 8000;
 const isLocal = hostname === "localhost" ? `:${PORT}` : "";
-const myCache = new nodeCache();
+const myCache = new nodeCache({ useClones: false });
 
 const appURL = `${protocol}://${hostname}${isLocal}`;
 
@@ -36,11 +36,13 @@ app.get("/repos", async (req, res) => {
     const url = `https://github.com/${userName}?tab=repositories`;
     const apiData = [];
     let fetchData = "";
-    if (myCache.has(userName)) {
-      fetchData = myCache.get(userName);
+    const cacheKey = `${userName}-${repoNum}`;
+    if (myCache.has(cacheKey)) {
+      fetchData = myCache.get(cacheKey);
+      console.log(myCache.keys());
     } else {
       fetchData = await repos(url, apiData, repoNum);
-      myCache.set(userName, fetchData);
+      myCache.set(cacheKey, fetchData);
     }
     res.json(fetchData);
   } catch (error) {
