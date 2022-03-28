@@ -1,11 +1,13 @@
 const express = require("express");
 const { children } = require("cheerio/lib/api/traversing");
 const { repos } = require("./repos");
+const nodeCache = require("node-cache");
 
 const protocol = process.env.HTTPS === "true" ? "https" : "http";
 const hostname = process.env.HOSTNAME || "localhost";
 const PORT = process.env.PORT || 8000;
 const isLocal = hostname === "localhost" ? `:${PORT}` : "";
+const myCache = new nodeCache();
 
 const appURL = `${protocol}://${hostname}${isLocal}`;
 
@@ -29,11 +31,17 @@ app.get("/repos", async (req, res) => {
           throw "No user name/user parameter provided...";
         })()
       : null;
-    let userName = req.query.user.toString();
-    let repoNum = req.query.repo ? req.query.repo.toString() : 0;
+    const userName = req.query.user.toString();
+    const repoNum = req.query.repo ? req.query.repo.toString() : 0;
     const url = `https://github.com/${userName}?tab=repositories`;
     const apiData = [];
-    const fetchData = await repos(url, apiData, repoNum);
+    let fetchData = "";
+    if (myCache.has(userName)) {
+      fetchData = myCache.get(userName);
+    } else {
+      fetchData = await repos(url, apiData, repoNum);
+      myCache.set(userName, fetchData);
+    }
     res.json(fetchData);
   } catch (error) {
     console.error(error);
