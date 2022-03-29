@@ -15,39 +15,35 @@ const app = express();
 
 app.set("json spaces", 2);
 
-app.get("/", async (req, res) => {
-  try {
-    res.redirect("/repos?");
-  } catch (error) {
-    console.error(error);
-    res.redirect("/repos?");
-  }
-});
-
 app.get("/repos", async (req, res) => {
   try {
-    req.query.user === "" || typeof req.query.user === "undefined"
+    const { user, repo } = req.query;
+    user === "" || typeof user === "undefined"
       ? (function () {
           throw "No user name/user parameter provided...";
         })()
       : null;
-    const userName = req.query.user.toString();
-    const repoNum = req.query.repo ? req.query.repo.toString() : 0;
-    const url = `https://github.com/${userName}?tab=repositories`;
+    const userName = user.toString(); // Sets user queryString to the userName.
+    const repoNum = repo ? repo.toString() : 0; // Sets number of repo queryString to the repoNum.
+    const url = `https://github.com/${userName}?tab=repositories`; // URL to fetch the users from.
     const apiData = [];
-    let fetchData = await repos(url, apiData);
-    if (typeof fetchData !== "undefined" && fetchData.length > 0) {
-      if (myCache.has(userName)) {
-        parseInt(repoNum) === 0
-          ? (fetchData = myCache.get(userName))
-          : (fetchData = myCache.get(userName).splice(0, repoNum));
-      } else {
-        parseInt(repoNum) === 0
-          ? myCache.set(userName, fetchData)
-          : (fetchData = fetchData.splice(0, repoNum));
-      }
+    const cacheKeys = {};
+
+    // Ultimate Caching starts for the API
+
+    if (myCache.has(userName)) {
+      parseInt(repoNum) === 0
+        ? res.json(myCache.get(userName))
+        : res.json(myCache.get(userName).slice(0, repoNum));
+      console.log(`Cache working for ${userName}...`);
+    } else {
+      var fetchData = await repos(url, apiData);
+      parseInt(repoNum) === 0
+        ? res.json(fetchData)
+        : res.json(fetchData.slice(0, repoNum));
+      console.log(`No cache found for ${userName} getting data from GitHub`);
+      myCache.set(userName, fetchData);
     }
-    res.json(fetchData);
   } catch (error) {
     console.error(error);
     res.send(`
@@ -61,6 +57,16 @@ app.get("/repos", async (req, res) => {
         </p>
       </div>
     `);
+  }
+});
+
+// Handle all routes other than /repos
+app.get("*", async (req, res) => {
+  try {
+    res.redirect("/repos?");
+  } catch (error) {
+    console.error(error);
+    res.redirect("/repos?");
   }
 });
 
