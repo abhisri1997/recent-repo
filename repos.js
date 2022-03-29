@@ -11,7 +11,7 @@ const repos = async (url, apiData) => {
       let repoLink = $(el).find(".wb-break-all > a").attr("href").trim();
       let repoDesc = $(el).find("[itemprop='description']").text().trim();
       apiData.push({
-        id: _i,
+        id: _i + 1,
         repoName: repoName,
         repoLink: `https://github.com${repoLink}`,
         repoDesc: repoDesc,
