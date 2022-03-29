@@ -44,10 +44,10 @@ app.get("/repos", async (req, res) => {
         fetchData !== "undefined" &&
         fetchData.length > 0
       ) {
-        // parseInt(repoNum) === 0
-        //   ? res.json(fetchData)
-        //   : res.json(fetchData.slice(0, repoNum));
-        // myCache.set(userName, fetchData);
+        parseInt(repoNum) === 0
+          ? res.json(fetchData)
+          : res.json(fetchData.slice(0, repoNum));
+        myCache.set(userName, fetchData);
       } else {
         throw new Error(`User "${userName}" doesn't exist on GitHub...`);
       }
