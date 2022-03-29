@@ -15,14 +15,7 @@ const app = express();
 
 app.set("json spaces", 2);
 
-app.get("/", async (req, res) => {
-  try {
-    res.redirect("/repos?");
-  } catch (error) {
-    console.error(error);
-    res.redirect("/repos?");
-  }
-});
+// Handle all routes other than /repos
 
 app.get("/repos", async (req, res) => {
   try {
@@ -31,11 +24,13 @@ app.get("/repos", async (req, res) => {
           throw "No user name/user parameter provided...";
         })()
       : null;
-    const userName = req.query.user.toString();
-    const repoNum = req.query.repo ? req.query.repo.toString() : 0;
-    const url = `https://github.com/${userName}?tab=repositories`;
+    const userName = req.query.user.toString(); // Sets user queryString to the userName.
+    const repoNum = req.query.repo ? req.query.repo.toString() : 0; // Sets number of repo queryString to the repoNum.
+    const url = `https://github.com/${userName}?tab=repositories`; // URL to fetch the users from.
     const apiData = [];
     let fetchData = await repos(url, apiData);
+
+    // Caching starts for the API
     if (typeof fetchData !== "undefined" && fetchData.length > 0) {
       if (myCache.has(userName)) {
         parseInt(repoNum) === 0
@@ -61,6 +56,15 @@ app.get("/repos", async (req, res) => {
         </p>
       </div>
     `);
+  }
+});
+
+app.get("*", async (req, res) => {
+  try {
+    res.redirect("/repos?");
+  } catch (error) {
+    console.error(error);
+    res.redirect("/repos?");
   }
 });
 
