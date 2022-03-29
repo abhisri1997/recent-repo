@@ -41,12 +41,10 @@ app.get("/repos", async (req, res) => {
         parseInt(repoNum) === 0
           ? (fetchData = myCache.get(userName))
           : (fetchData = myCache.get(userName).splice(0, repoNum));
-        console.log("Inside if ", myCache.keys());
       } else {
         parseInt(repoNum) === 0
           ? myCache.set(userName, fetchData)
           : (fetchData = fetchData.splice(0, repoNum));
-        console.log("Inside else ", myCache.keys());
       }
     }
     res.json(fetchData);
