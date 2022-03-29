@@ -38,7 +38,6 @@ app.get("/repos", async (req, res) => {
       console.log(`Cache working for ${userName}...`);
     } else {
       var fetchData = await repos(url, apiData);
-      console.log(fetchData);
       if (
         Array.isArray(fetchData) &&
         fetchData !== "undefined" &&
