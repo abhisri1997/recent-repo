@@ -15,8 +15,6 @@ const app = express();
 
 app.set("json spaces", 2);
 
-// Handle all routes other than /repos
-
 app.get("/repos", async (req, res) => {
   try {
     req.query.user === "" || typeof req.query.user === "undefined"
@@ -59,6 +57,7 @@ app.get("/repos", async (req, res) => {
   }
 });
 
+// Handle all routes other than /repos
 app.get("*", async (req, res) => {
   try {
     res.redirect("/repos?");
