@@ -38,11 +38,20 @@ app.get("/repos", async (req, res) => {
       console.log(`Cache working for ${userName}...`);
     } else {
       var fetchData = await repos(url, apiData);
-      parseInt(repoNum) === 0
-        ? res.json(fetchData)
-        : res.json(fetchData.slice(0, repoNum));
+      console.log(fetchData);
+      if (
+        Array.isArray(fetchData) &&
+        fetchData !== "undefined" &&
+        fetchData.length > 0
+      ) {
+        // parseInt(repoNum) === 0
+        //   ? res.json(fetchData)
+        //   : res.json(fetchData.slice(0, repoNum));
+        // myCache.set(userName, fetchData);
+      } else {
+        throw new Error(`User "${userName}" doesn't exist on GitHub...`);
+      }
       console.log(`No cache found for ${userName} getting data from GitHub`);
-      myCache.set(userName, fetchData);
     }
   } catch (error) {
     console.error(error);
